@@ -39,6 +39,7 @@ use Aliziodev\PayId\Factories\DriverFactory;
 use Closure;
 use Illuminate\Contracts\Config\Repository as Config;
 use Illuminate\Contracts\Events\Dispatcher;
+use Throwable;
 
 class PayIdManager
 {
@@ -54,6 +55,7 @@ class PayIdManager
         protected readonly Config $config,
         protected readonly DriverFactory $factory,
         protected readonly Dispatcher $events,
+        protected readonly mixed $ledger = null,
     ) {}
 
     /**
@@ -102,6 +104,8 @@ class PayIdManager
         /** @var DriverInterface&SupportsCharge $driver */
         $response = $driver->charge($request);
 
+        $this->recordChargeAttempt($driver->getName(), $request, $response);
+
         $this->events->dispatch(new PaymentCharged($response));
 
         return $response;
@@ -115,6 +119,8 @@ class PayIdManager
         /** @var DriverInterface&SupportsDirectCharge $driver */
         $response = $driver->directCharge($request);
 
+        $this->recordChargeAttempt($driver->getName(), $request, $response);
+
         $this->events->dispatch(new PaymentCharged($response));
 
         return $response;
@@ -127,6 +133,8 @@ class PayIdManager
 
         /** @var DriverInterface&SupportsStatus $driver */
         $response = $driver->status($merchantOrderId);
+
+        $this->recordStatusSnapshot($driver->getName(), $response);
 
         $this->events->dispatch(new PaymentStatusChecked($response));
 
@@ -154,6 +162,8 @@ class PayIdManager
         /** @var DriverInterface&SupportsCancel $driver */
         $response = $driver->cancel($merchantOrderId);
 
+        $this->recordStatusSnapshot($driver->getName(), $response);
+
         $this->events->dispatch(new PaymentCancelled($response));
 
         return $response;
@@ -166,6 +176,8 @@ class PayIdManager
 
         /** @var DriverInterface&SupportsExpire $driver */
         $response = $driver->expire($merchantOrderId);
+
+        $this->recordStatusSnapshot($driver->getName(), $response);
 
         $this->events->dispatch(new PaymentExpired($response));
 
@@ -180,6 +192,8 @@ class PayIdManager
         /** @var DriverInterface&SupportsApprove $driver */
         $response = $driver->approve($merchantOrderId);
 
+        $this->recordStatusSnapshot($driver->getName(), $response);
+
         $this->events->dispatch(new PaymentApproved($response));
 
         return $response;
@@ -192,6 +206,8 @@ class PayIdManager
 
         /** @var DriverInterface&SupportsDeny $driver */
         $response = $driver->deny($merchantOrderId);
+
+        $this->recordStatusSnapshot($driver->getName(), $response);
 
         $this->events->dispatch(new PaymentDenied($response));
 
@@ -334,6 +350,56 @@ class PayIdManager
     {
         if (! $driver->supports($capability)) {
             throw new UnsupportedCapabilityException($driver->getName(), $capability);
+        }
+    }
+
+    protected function recordChargeAttempt(string $driverName, ChargeRequest $request, ChargeResponse $response): void
+    {
+        if (! is_object($this->ledger) || ! method_exists($this->ledger, 'recordChargeAttempt')) {
+            return;
+        }
+
+        try {
+            $this->ledger->recordChargeAttempt([
+                'provider' => $driverName,
+                'merchant_order_id' => $request->merchantOrderId,
+                'provider_transaction_id' => $response->providerTransactionId,
+                'status' => $response->status->value,
+                'amount' => $request->amount,
+                'currency' => $request->currency,
+                'customer_reference' => $request->customer->email,
+                'metadata' => $request->metadata,
+                'raw_response' => $response->rawResponse,
+                'occurred_at' => now(),
+            ]);
+        } catch (Throwable $e) {
+            if (function_exists('report')) {
+                report($e);
+            }
+        }
+    }
+
+    protected function recordStatusSnapshot(string $driverName, StatusResponse $response): void
+    {
+        if (! is_object($this->ledger) || ! method_exists($this->ledger, 'upsertStatus')) {
+            return;
+        }
+
+        try {
+            $this->ledger->upsertStatus([
+                'provider' => $driverName,
+                'merchant_order_id' => $response->merchantOrderId,
+                'provider_transaction_id' => $response->providerTransactionId,
+                'status' => $response->status->value,
+                'amount' => $response->amount,
+                'currency' => $response->currency,
+                'raw_response' => $response->rawResponse,
+                'occurred_at' => $response->paidAt,
+            ]);
+        } catch (Throwable $e) {
+            if (function_exists('report')) {
+                report($e);
+            }
         }
     }
 }

@@ -21,9 +21,11 @@ class InstallCommand extends Command
         'Midtrans' => [
             'package' => 'aliziodev/payid-midtrans',
             'env' => [
+                'MIDTRANS_ENV' => 'sandbox',
                 'MIDTRANS_SERVER_KEY' => '',
                 'MIDTRANS_CLIENT_KEY' => '',
-                'MIDTRANS_IS_PRODUCTION' => 'false',
+                'MIDTRANS_MERCHANT_ID' => '',
+                'MIDTRANS_ORDER_PREFIX' => 'CHARTER-',
             ],
         ],
         'Xendit' => [
@@ -171,7 +173,7 @@ class InstallCommand extends Command
             $hasNew = false;
 
             foreach ($envVars as $key => $default) {
-                if (! str_contains($envContent, $key)) {
+                if (! $this->envKeyExists($envContent, $key)) {
                     $stub .= "{$key}={$default}\n";
                     $hasNew = true;
                     $appended[] = $key;
@@ -263,5 +265,12 @@ class InstallCommand extends Command
         $this->newLine();
         $this->line('  <fg=gray>Documentation: https://github.com/aliziodev/payid</>');
         $this->newLine();
+    }
+
+    protected function envKeyExists(string $envContent, string $key): bool
+    {
+        $pattern = '/^\s*'.preg_quote($key, '/').'\s*=/m';
+
+        return preg_match($pattern, $envContent) === 1;
     }
 }

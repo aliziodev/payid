@@ -34,6 +34,8 @@ return [
             'server_key' => env('MIDTRANS_SERVER_KEY'),
             'client_key' => env('MIDTRANS_CLIENT_KEY'),
             'merchant_id' => env('MIDTRANS_MERCHANT_ID'),
+            // Shared order prefix used by downstream integrations (e.g. Charter bridge).
+            'order_prefix' => env('MIDTRANS_ORDER_PREFIX', 'CHARTER-'),
             // Override endpoint URLs. Leave null to auto-detect from 'environment'.
             'endpoints' => [
                 'snap_base_url' => env('MIDTRANS_SNAP_URL'),

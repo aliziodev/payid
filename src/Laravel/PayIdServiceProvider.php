@@ -53,6 +53,9 @@ class PayIdServiceProvider extends ServiceProvider
                 config: $app['config'],
                 factory: $app->make(DriverFactory::class),
                 events: $app['events'],
+                ledger: $app->bound('payid-transactions.ledger')
+                    ? $app->make('payid-transactions.ledger')
+                    : null,
             );
         });
 
@@ -66,6 +69,9 @@ class PayIdServiceProvider extends ServiceProvider
                 manager: $app->make(PayIdManager::class),
                 events: $app['events'],
                 logger: Log::channel($app['config']->get('payid.logging.channel')),
+                ledger: $app->bound('payid-transactions.ledger')
+                    ? $app->make('payid-transactions.ledger')
+                    : null,
             );
         });
     }

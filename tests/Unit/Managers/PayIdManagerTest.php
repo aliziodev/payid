@@ -28,6 +28,30 @@ use Illuminate\Support\Facades\Event;
 describe('PayIdManager', function () {
 
     beforeEach(function () {
+        $ledgerSpy = new class
+        {
+            public array $chargeAttempts = [];
+
+            public array $statusSnapshots = [];
+
+            public function recordChargeAttempt(array $attributes): object
+            {
+                $this->chargeAttempts[] = $attributes;
+
+                return (object) $attributes;
+            }
+
+            public function upsertStatus(array $attributes): object
+            {
+                $this->statusSnapshots[] = $attributes;
+
+                return (object) $attributes;
+            }
+        };
+
+        app()->instance('payid-transactions.ledger', $ledgerSpy);
+        app()->instance('payid-transactions.ledger.spy', $ledgerSpy);
+
         // config('payid.default') sudah di-set ke 'fake' di TestCase
         // config('payid.drivers.fake') sudah di-set ke ['driver' => 'fake']
         app('payid')->extend('fake', fn () => new FakeDriver);
@@ -76,7 +100,12 @@ describe('PayIdManager', function () {
             'customer' => ['name' => 'Budi', 'email' => 'budi@example.com'],
         ]));
 
-        expect($charged)->toBeTrue();
+        /** @var object{chargeAttempts: array<int, array<string, mixed>>} $ledgerSpy */
+        $ledgerSpy = app('payid-transactions.ledger.spy');
+
+        expect($charged)->toBeTrue()
+            ->and($ledgerSpy->chargeAttempts)->toHaveCount(1)
+            ->and($ledgerSpy->chargeAttempts[0]['merchant_order_id'])->toBe('ORDER-001');
     });
 
     it('dispatches PaymentStatusChecked event after status check', function () {
@@ -91,7 +120,12 @@ describe('PayIdManager', function () {
 
         app(PayIdManager::class)->status('ORDER-001');
 
-        expect($checked)->toBeTrue();
+        /** @var object{statusSnapshots: array<int, array<string, mixed>>} $ledgerSpy */
+        $ledgerSpy = app('payid-transactions.ledger.spy');
+
+        expect($checked)->toBeTrue()
+            ->and($ledgerSpy->statusSnapshots)->toHaveCount(1)
+            ->and($ledgerSpy->statusSnapshots[0]['merchant_order_id'])->toBe('ORDER-001');
     });
 
     it('dispatches PaymentCharged event after directCharge', function () {
@@ -257,6 +291,31 @@ describe('PayIdManager', function () {
         $switched = $manager->driver('fake');
 
         expect($manager)->not->toBe($switched);
+    });
+
+    it('keeps charge flow working when ledger write fails', function () {
+        $failingLedger = new class
+        {
+            public function recordChargeAttempt(array $attributes): never
+            {
+                throw new RuntimeException('ledger unavailable');
+            }
+
+            public function upsertStatus(array $attributes): object
+            {
+                return (object) $attributes;
+            }
+        };
+
+        app()->instance('payid-transactions.ledger', $failingLedger);
+        app()->forgetInstance(PayIdManager::class);
+
+        expect(fn () => app(PayIdManager::class)->charge(ChargeRequest::make([
+            'merchant_order_id' => 'ORDER-LEDGER-FAIL-001',
+            'amount' => 50000,
+            'channel' => PaymentChannel::Qris,
+            'customer' => ['name' => 'Fail Safe', 'email' => 'failsafe@example.com'],
+        ])))->not->toThrow(Throwable::class);
     });
 
 });
