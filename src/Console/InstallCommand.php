@@ -33,13 +33,13 @@ class InstallCommand extends Command
         // ---------------------------------------------------------------
         'Midtrans' => [
             'config_key' => 'midtrans',
-            'package'    => 'aliziodev/payid-midtrans',
-            'env'        => [
-                'PAYID_DEFAULT_DRIVER'  => 'midtrans',
-                'MIDTRANS_ENV'          => 'sandbox',
-                'MIDTRANS_SERVER_KEY'   => '',
-                'MIDTRANS_CLIENT_KEY'   => '',
-                'MIDTRANS_MERCHANT_ID'  => '',
+            'package' => 'aliziodev/payid-midtrans',
+            'env' => [
+                'PAYID_DEFAULT_DRIVER' => 'midtrans',
+                'MIDTRANS_ENV' => 'sandbox',
+                'MIDTRANS_SERVER_KEY' => '',
+                'MIDTRANS_CLIENT_KEY' => '',
+                'MIDTRANS_MERCHANT_ID' => '',
                 'MIDTRANS_ORDER_PREFIX' => '',
             ],
         ],
@@ -49,12 +49,12 @@ class InstallCommand extends Command
         // ---------------------------------------------------------------
         'Xendit' => [
             'config_key' => 'xendit',
-            'package'    => 'aliziodev/payid-xendit',
-            'env'        => [
+            'package' => 'aliziodev/payid-xendit',
+            'env' => [
                 'PAYID_DEFAULT_DRIVER' => 'xendit',
-                'XENDIT_ENV'           => 'test',
-                'XENDIT_SECRET_KEY'    => '',
-                'XENDIT_PUBLIC_KEY'    => '',
+                'XENDIT_ENV' => 'test',
+                'XENDIT_SECRET_KEY' => '',
+                'XENDIT_PUBLIC_KEY' => '',
                 'XENDIT_WEBHOOK_TOKEN' => '',
             ],
         ],
@@ -64,13 +64,13 @@ class InstallCommand extends Command
         // ---------------------------------------------------------------
         'DOKU' => [
             'config_key' => 'doku',
-            'package'    => 'aliziodev/payid-doku',
-            'env'        => [
+            'package' => 'aliziodev/payid-doku',
+            'env' => [
                 'PAYID_DEFAULT_DRIVER' => 'doku',
-                'DOKU_ENV'             => 'sandbox',
-                'DOKU_CLIENT_ID'       => '',
-                'DOKU_SECRET_KEY'      => '',
-                'DOKU_SHARED_KEY'      => '',
+                'DOKU_ENV' => 'sandbox',
+                'DOKU_CLIENT_ID' => '',
+                'DOKU_SECRET_KEY' => '',
+                'DOKU_SHARED_KEY' => '',
             ],
         ],
 
@@ -79,12 +79,12 @@ class InstallCommand extends Command
         // ---------------------------------------------------------------
         'iPaymu' => [
             'config_key' => 'ipaymu',
-            'package'    => 'aliziodev/payid-ipaymu',
-            'env'        => [
+            'package' => 'aliziodev/payid-ipaymu',
+            'env' => [
                 'PAYID_DEFAULT_DRIVER' => 'ipaymu',
-                'IPAYMU_ENV'           => 'sandbox',
-                'IPAYMU_VA'            => '',
-                'IPAYMU_API_KEY'       => '',
+                'IPAYMU_ENV' => 'sandbox',
+                'IPAYMU_VA' => '',
+                'IPAYMU_API_KEY' => '',
             ],
         ],
 
@@ -93,12 +93,12 @@ class InstallCommand extends Command
         // ---------------------------------------------------------------
         'Nicepay' => [
             'config_key' => 'nicepay',
-            'package'    => 'aliziodev/payid-nicepay',
-            'env'        => [
-                'PAYID_DEFAULT_DRIVER'  => 'nicepay',
-                'NICEPAY_ENV'           => 'sandbox',
-                'NICEPAY_MERCHANT_ID'   => '',
-                'NICEPAY_MERCHANT_KEY'  => '',
+            'package' => 'aliziodev/payid-nicepay',
+            'env' => [
+                'PAYID_DEFAULT_DRIVER' => 'nicepay',
+                'NICEPAY_ENV' => 'sandbox',
+                'NICEPAY_MERCHANT_ID' => '',
+                'NICEPAY_MERCHANT_KEY' => '',
             ],
         ],
 
@@ -107,12 +107,12 @@ class InstallCommand extends Command
         // ---------------------------------------------------------------
         'OY! Indonesia' => [
             'config_key' => 'oyid',
-            'package'    => 'aliziodev/payid-oyid',
-            'env'        => [
+            'package' => 'aliziodev/payid-oyid',
+            'env' => [
                 'PAYID_DEFAULT_DRIVER' => 'oyid',
-                'OYID_ENV'             => 'staging',
-                'OYID_USERNAME'        => '',
-                'OYID_API_KEY'         => '',
+                'OYID_ENV' => 'staging',
+                'OYID_USERNAME' => '',
+                'OYID_API_KEY' => '',
             ],
         ],
 
@@ -121,13 +121,13 @@ class InstallCommand extends Command
         // ---------------------------------------------------------------
         'Tripay' => [
             'config_key' => 'tripay',
-            'package'    => 'aliziodev/payid-tripay',
-            'env'        => [
-                'PAYID_DEFAULT_DRIVER'  => 'tripay',
-                'TRIPAY_ENV'            => 'sandbox',
-                'TRIPAY_API_KEY'        => '',
-                'TRIPAY_PRIVATE_KEY'    => '',
-                'TRIPAY_MERCHANT_CODE'  => '',
+            'package' => 'aliziodev/payid-tripay',
+            'env' => [
+                'PAYID_DEFAULT_DRIVER' => 'tripay',
+                'TRIPAY_ENV' => 'sandbox',
+                'TRIPAY_API_KEY' => '',
+                'TRIPAY_PRIVATE_KEY' => '',
+                'TRIPAY_MERCHANT_CODE' => '',
             ],
         ],
 
@@ -139,9 +139,9 @@ class InstallCommand extends Command
 
         $this->publishConfig();
 
-        $driver     = $this->selectDriver();
-        $stack      = $this->selectTransactionStack();
-        $configKey  = $this->drivers[$driver]['config_key'];
+        $driver = $this->selectDriver();
+        $stack = $this->selectTransactionStack();
+        $configKey = $this->drivers[$driver]['config_key'];
 
         $this->installPackages($driver, $stack);
 
@@ -163,18 +163,11 @@ class InstallCommand extends Command
         // ── Merah (bright → normal) ───────────────────────────────────────────
         $this->line('  <fg=red;options=bold>██████╗  █████╗ ██╗   ██╗██╗██████╗ </>');
         $this->line('  <fg=red;options=bold>██╔══██╗██╔══██╗╚██╗ ██╔╝██║██╔══██╗</>');
-        $this->line('  <fg=red>██████╔╝███████║ ╚████╔╝ ██║██║  ██║</>');
+        $this->line('  <fg=red;options=bold>██████╔╝███████║ ╚████╔╝ ██║██║  ██║</>');
         // ── Putih (normal → bright) ───────────────────────────────────────────
         $this->line('  <fg=white>██╔═══╝ ██╔══██║  ╚██╔╝  ██║██║  ██║</>');
         $this->line('  <fg=white;options=bold>██║     ██║  ██║   ██║   ██║██████╔╝</>');
         $this->line('  <fg=white;options=bold>╚═╝     ╚═╝  ╚═╝   ╚═╝   ╚═╝╚═════╝ </>');
-
-        $this->newLine();
-
-        // ── Bendera merah-putih ───────────────────────────────────────────────
-        $this->line('  <fg=red>▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄</><fg=white>▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄</>');
-        $this->line('  <fg=red;options=bold>          MERAH         </><fg=white;options=bold>        PUTIH        </>');
-        $this->line('  <fg=red>▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀</><fg=white>▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀</>');
 
         $this->newLine();
         $this->line('  <fg=white;options=bold>Laravel Payment Gateway Orchestrator</>');
@@ -186,7 +179,7 @@ class InstallCommand extends Command
     {
         $this->components->task('Publishing config file', function (): void {
             $this->callSilent('vendor:publish', [
-                '--tag'   => 'payid-config',
+                '--tag' => 'payid-config',
                 '--force' => false,
             ]);
         });
@@ -218,9 +211,9 @@ class InstallCommand extends Command
 
     protected function installPackages(string $driver, string $stack): void
     {
-        $driverPackage       = $this->drivers[$driver]['package'];
-        $withTransactions    = $stack === self::STACK_TRANSACTIONS;
-        $skipActualInstall   = (bool) $this->option('no-install');
+        $driverPackage = $this->drivers[$driver]['package'];
+        $withTransactions = $stack === self::STACK_TRANSACTIONS;
+        $skipActualInstall = (bool) $this->option('no-install');
 
         $this->newLine();
         $this->line('  <fg=white;options=bold>Installing packages:</>');
@@ -233,16 +226,6 @@ class InstallCommand extends Command
         );
 
         if ($skipActualInstall) {
-            // Just show task boxes as "pending"
-            $this->components->task("<fg=yellow>{$driverPackage}</>", fn () => true);
-
-            if ($withTransactions) {
-                $this->components->task(
-                    '<fg=yellow>aliziodev/payid-transactions</> <fg=gray>(ledger + audit trail)</>',
-                    fn () => true,
-                );
-            }
-
             $this->newLine();
             $this->line('  <fg=gray>Run the following commands to install:</>');
             $this->newLine();
@@ -256,7 +239,7 @@ class InstallCommand extends Command
         }
 
         // Actually run composer
-        $driverOk       = $this->composerRequire($driverPackage);
+        $driverOk = $this->composerRequire($driverPackage);
         $transactionsOk = true;
 
         if ($withTransactions) {
@@ -280,8 +263,8 @@ class InstallCommand extends Command
     }
 
     /**
-     * Run `composer require <package>` and stream the output line-by-line.
-     * Returns true if the process exits successfully.
+     * Run `composer require <package>`, stream only relevant progress lines,
+     * then render a timed result line that mirrors components->task() style.
      */
     protected function composerRequire(string $package): bool
     {
@@ -290,39 +273,66 @@ class InstallCommand extends Command
         $this->newLine();
 
         $command = $this->buildComposerCommand(['require', $package]);
-        $process = new Process($command, base_path(), null, null, 300); // 5-minute timeout
+        $process = new Process($command, base_path(), null, null, 300);
 
-        $failed = false;
+        $start = microtime(true);
+        $hasOutput = false;
 
-        $process->run(function (string $type, string $data) use (&$failed): void {
-            if ($type === Process::ERR) {
-                $failed = true;
-            }
-
-            foreach (explode("\n", rtrim($data)) as $line) {
-                if (trim($line) !== '') {
-                    $this->line("  <fg=gray>{$line}</>");
+        $process->run(function (string $type, string $data) use (&$hasOutput): void {
+            foreach (explode("\n", $data) as $line) {
+                if ($this->isComposerProgressLine($line)) {
+                    $this->line('  <fg=gray>'.rtrim($line).'</>');
+                    $hasOutput = true;
                 }
             }
         });
 
+        $elapsed = microtime(true) - $start;
         $success = $process->isSuccessful();
 
-        $this->newLine();
-
-        if ($success) {
-            $this->components->task(
-                "<fg=green>{$package}</> <fg=gray>installed</>",
-                fn () => true,
-            );
-        } else {
-            $this->components->task(
-                "<fg=red>{$package}</> <fg=gray>installation failed</>",
-                fn () => false,
-            );
+        if ($hasOutput) {
+            $this->newLine();
         }
 
+        $this->renderInstallResult($package, $elapsed, $success);
+
         return $success;
+    }
+
+    /**
+     * Only pass through lines that show actual package operations,
+     * e.g. "  - Downloading …" / "  - Installing …" / "  - Upgrading …".
+     */
+    protected function isComposerProgressLine(string $line): bool
+    {
+        // Composer indents these with two spaces then "- "
+        return (bool) preg_match('/^  - /', $line);
+    }
+
+    /**
+     * Render a result line that visually matches components->task():
+     *   package-name installed .............. 8.4s DONE
+     */
+    protected function renderInstallResult(string $package, float $elapsed, bool $success): void
+    {
+        $elapsedStr = $elapsed >= 1
+            ? number_format($elapsed, 1).'s'
+            : number_format($elapsed * 1000, 0).'ms';
+
+        $statusText = $success ? 'installed' : 'installation failed';
+        $statusColor = $success ? 'green' : 'red';
+        $doneText = $success ? 'DONE' : 'FAIL';
+
+        // Keep total visual width ~72 chars (matches components->task() default)
+        $visibleLabel = "  {$package} {$statusText}";
+        $visibleSuffix = " {$elapsedStr} {$doneText}";
+        $dotsCount = max(3, 72 - mb_strlen($visibleLabel) - mb_strlen($visibleSuffix));
+
+        $this->line(
+            "  <fg={$statusColor}>{$package}</> {$statusText} ".
+            '<fg=gray>'.str_repeat('.', $dotsCount)." {$elapsedStr}</> ".
+            "<fg={$statusColor};options=bold>{$doneText}</>",
+        );
     }
 
     /**
@@ -362,10 +372,10 @@ class InstallCommand extends Command
         // Build env vars: swap the generic PAYID_DEFAULT_DRIVER placeholder for real driver value
         $envVars = $this->drivers[$driver]['env'] ?? [];
 
-        $stub     = "\n# PayID — {$driver}\n";
-        $hasNew   = false;
+        $stub = "\n# PayID — {$driver}\n";
+        $hasNew = false;
         $appended = [];
-        $updated  = [];
+        $updated = [];
 
         foreach ($envVars as $key => $default) {
             // PAYID_DEFAULT_DRIVER: update in-place if already exists, append if not
@@ -378,18 +388,20 @@ class InstallCommand extends Command
                     );
                     File::put($envPath, $envContent);
                     $updated[] = $key;
+
                     continue;
                 }
                 // Not present — will be appended below
-                $stub   .= "{$key}={$configKey}\n";
-                $hasNew  = true;
+                $stub .= "{$key}={$configKey}\n";
+                $hasNew = true;
                 $appended[] = $key;
+
                 continue;
             }
 
             if (! str_contains($envContent, $key)) {
-                $stub   .= "{$key}={$default}\n";
-                $hasNew  = true;
+                $stub .= "{$key}={$default}\n";
+                $hasNew = true;
                 $appended[] = $key;
             }
         }
@@ -423,7 +435,7 @@ class InstallCommand extends Command
     protected function printNextSteps(string $driver, string $stack, string $configKey): void
     {
         $withTransactions = $stack === self::STACK_TRANSACTIONS;
-        $credentialKeys   = $this->credentialEnvKeys($driver);
+        $credentialKeys = $this->credentialEnvKeys($driver);
 
         $this->newLine();
         $this->components->info('Setup complete! Follow these steps to finish:');
@@ -440,7 +452,7 @@ class InstallCommand extends Command
         $this->newLine();
 
         // Step 2 — note about PAYID_DEFAULT_DRIVER (already set by appendEnvVariables)
-        $this->line("  <options=bold>2. Your default driver is already set in <comment>.env</comment>:</>");
+        $this->line('  <options=bold>2. Your default driver is already set in <comment>.env</comment>:</>');
         $this->newLine();
         $this->line("     <fg=gray>PAYID_DEFAULT_DRIVER={$configKey}</>");
 
@@ -452,6 +464,7 @@ class InstallCommand extends Command
             $this->line("  <options=bold>{$step}. Publish and run payid-transactions migrations:</>");
             $this->newLine();
             $this->line('     <fg=green>php artisan vendor:publish --tag=payid-transactions-migrations</>');
+            $this->line('     <fg=green>php artisan vendor:publish --tag=payid-transactions-config</>');
             $this->line('     <fg=green>php artisan migrate</>');
             $step++;
         }
