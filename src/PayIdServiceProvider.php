@@ -1,9 +1,9 @@
 <?php
 
-namespace Aliziodev\PayId\Laravel;
+namespace Aliziodev\PayId;
 
+use Aliziodev\PayId\Console\InstallCommand;
 use Aliziodev\PayId\Factories\DriverFactory;
-use Aliziodev\PayId\Laravel\Console\InstallCommand;
 use Aliziodev\PayId\Managers\PayIdManager;
 use Aliziodev\PayId\Webhooks\WebhookProcessor;
 use Illuminate\Contracts\Container\Container;
@@ -15,7 +15,7 @@ class PayIdServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->mergeConfigFrom(
-            __DIR__.'/../../config/payid.php',
+            __DIR__.'/../config/payid.php',
             'payid',
         );
 
@@ -27,10 +27,10 @@ class PayIdServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->publishes([
-            __DIR__.'/../../config/payid.php' => config_path('payid.php'),
+            __DIR__.'/../config/payid.php' => config_path('payid.php'),
         ], 'payid-config');
 
-        $this->loadRoutesFrom(__DIR__.'/../../routes/webhooks.php');
+        $this->loadRoutesFrom(__DIR__.'/../routes/webhooks.php');
 
         if ($this->app->runningInConsole()) {
             $this->commands([
@@ -76,9 +76,6 @@ class PayIdServiceProvider extends ServiceProvider
         });
     }
 
-    /**
-     * @return array<int, string>
-     */
     public function provides(): array
     {
         return [

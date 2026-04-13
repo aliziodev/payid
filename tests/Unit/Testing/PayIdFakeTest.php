@@ -5,7 +5,7 @@ use Aliziodev\PayId\DTO\ChargeResponse;
 use Aliziodev\PayId\Enums\Capability;
 use Aliziodev\PayId\Enums\PaymentChannel;
 use Aliziodev\PayId\Enums\PaymentStatus;
-use Aliziodev\PayId\Laravel\Facades\PayId;
+use Aliziodev\PayId\Facades\PayId;
 use Aliziodev\PayId\Testing\FakeDriver;
 
 describe('PayIdFake', function () {

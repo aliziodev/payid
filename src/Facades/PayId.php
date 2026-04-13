@@ -1,6 +1,6 @@
 <?php
 
-namespace Aliziodev\PayId\Laravel\Facades;
+namespace Aliziodev\PayId\Facades;
 
 use Aliziodev\PayId\Contracts\DriverInterface;
 use Aliziodev\PayId\DTO\ChargeRequest;

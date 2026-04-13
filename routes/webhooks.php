@@ -1,6 +1,6 @@
 <?php
 
-use Aliziodev\PayId\Laravel\Http\Controllers\WebhookController;
+use Aliziodev\PayId\Http\Controllers\WebhookController;
 use Illuminate\Support\Facades\Route;
 
 Route::post(

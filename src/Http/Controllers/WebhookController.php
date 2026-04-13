@@ -1,6 +1,6 @@
 <?php
 
-namespace Aliziodev\PayId\Laravel\Http\Controllers;
+namespace Aliziodev\PayId\Http\Controllers;
 
 use Aliziodev\PayId\Webhooks\WebhookProcessor;
 use Illuminate\Http\Request;

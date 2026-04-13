@@ -2,8 +2,8 @@
 
 namespace Aliziodev\PayId\Tests;
 
-use Aliziodev\PayId\Laravel\Facades\PayId;
-use Aliziodev\PayId\Laravel\PayIdServiceProvider;
+use Aliziodev\PayId\Facades\PayId;
+use Aliziodev\PayId\PayIdServiceProvider;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
 
 abstract class TestCase extends OrchestraTestCase

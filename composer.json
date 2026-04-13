@@ -51,10 +51,10 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Aliziodev\\PayId\\Laravel\\PayIdServiceProvider"
+                "Aliziodev\\PayId\\PayIdServiceProvider"
             ],
             "aliases": {
-                "PayId": "Aliziodev\\PayId\\Laravel\\Facades\\PayId"
+                "PayId": "Aliziodev\\PayId\\Facades\\PayId"
             }
         }
     },
