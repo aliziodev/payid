@@ -174,7 +174,7 @@ Fake helper lain yang tersedia termasuk:
 | Midtrans | `aliziodev/payid-midtrans` | Stable |
 | Xendit   | `aliziodev/payid-xendit`   | Stable |
 | iPaymu   | `aliziodev/payid-ipaymu`   | Beta |
-| Nicepay  | `aliziodev/payid-nicepay`  | Beta |
+| Nicepay  | `aliziodev/payid-nicepay`  | Stable |
 | DOKU     | `aliziodev/payid-doku`     | Coming Soon |
 
 ---
@@ -221,7 +221,7 @@ Fake helper lain yang tersedia termasuk:
 
 - Coverage report belum dapat dijalankan jika environment belum memuat driver coverage.
 - Driver iPaymu sudah tersedia pada level beta dan dapat dipakai untuk flow charge/status/webhook.
-- Driver Nicepay sudah tersedia pada level beta dan mencakup fitur SNAP + V2 melalui extension method.
+- Driver Nicepay sudah final dan berstatus stable, mencakup fitur SNAP + V2 melalui extension method.
 - Fitur queue processing webhook disiapkan pada konfigurasi, tetapi implementasi orchestration async tetap perlu ditangani di aplikasi host.
 
 ---
