@@ -8,7 +8,7 @@ return [
     |--------------------------------------------------------------------------
     | Driver yang digunakan secara default jika tidak ditentukan secara eksplisit.
     | Nilai harus sesuai dengan salah satu key di array 'drivers' di bawah.
-    | Driver aktif saat ini: midtrans | xendit | ipaymu
+    | Driver aktif saat ini: midtrans | xendit | ipaymu | nicepay
     */
     'default' => env('PAYID_DEFAULT_DRIVER', 'midtrans'),
 
@@ -33,8 +33,8 @@ return [
     |   3. Set PAYID_DEFAULT_DRIVER ke nama driver
     |
     | Catatan:
-    |   - Driver aktif: midtrans, xendit, ipaymu
-    |   - Coming soon: doku, nicepay, oyid, tripay
+    |   - Driver aktif: midtrans, xendit, ipaymu, nicepay
+    |   - Coming soon: doku, oyid, tripay
     */
     'drivers' => [
 
@@ -103,9 +103,33 @@ return [
 
         /*
         |----------------------------------------------------------------------
+        | Nicepay
+        |----------------------------------------------------------------------
+        | Dokumentasi: https://docs.nicepay.co.id
+        | SDK Official: https://github.com/nicepay-dev/php-nicepay
+        */
+        'nicepay' => [
+            'driver' => 'nicepay',
+            'environment' => env('NICEPAY_ENV', 'sandbox'), // sandbox | production
+            'merchant_id' => env('NICEPAY_MERCHANT_ID'),
+            'client_secret' => env('NICEPAY_CLIENT_SECRET'),
+            'private_key' => env('NICEPAY_PRIVATE_KEY'),
+            'merchant_key' => env('NICEPAY_MERCHANT_KEY'),
+            'partner_id' => env('NICEPAY_PARTNER_ID'),
+            'base_url' => env('NICEPAY_BASE_URL'),
+            'timeout' => (int) env('NICEPAY_TIMEOUT', 30),
+            'webhook_verification_enabled' => (bool) env('NICEPAY_WEBHOOK_VERIFY', false),
+            'webhook_token' => env('NICEPAY_WEBHOOK_TOKEN'),
+            'webhook_public_key' => env('NICEPAY_WEBHOOK_PUBLIC_KEY'),
+            'payment_path' => env('NICEPAY_PAYMENT_PATH', '/api/v1.0/debit/payment-host-to-host'),
+            'status_path' => env('NICEPAY_STATUS_PATH', '/api/v1.0/debit/status'),
+        ],
+
+        /*
+        |----------------------------------------------------------------------
         | Coming Soon Drivers
         |----------------------------------------------------------------------
-        | DOKU, Nicepay, OY! Indonesia, dan Tripay masih roadmap.
+        | DOKU, OY! Indonesia, dan Tripay masih roadmap.
         | Konfigurasi aktif sengaja belum disediakan agar tidak ambigu.
         */
 

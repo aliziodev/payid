@@ -83,6 +83,30 @@ class InstallCommand extends Command
                 'IPAYMU_HISTORY_PATH' => '/api/v2/history',
             ],
         ],
+
+        // ---------------------------------------------------------------
+        // Nicepay — config('payid.drivers.nicepay')
+        // ---------------------------------------------------------------
+        'Nicepay' => [
+            'config_key' => 'nicepay',
+            'package' => 'aliziodev/payid-nicepay',
+            'env' => [
+                'PAYID_DEFAULT_DRIVER' => 'nicepay',
+                'NICEPAY_ENV' => 'sandbox',
+                'NICEPAY_MERCHANT_ID' => '',
+                'NICEPAY_CLIENT_SECRET' => '',
+                'NICEPAY_PRIVATE_KEY' => '',
+                'NICEPAY_MERCHANT_KEY' => '',
+                'NICEPAY_PARTNER_ID' => '',
+                'NICEPAY_BASE_URL' => '',
+                'NICEPAY_TIMEOUT' => '30',
+                'NICEPAY_WEBHOOK_VERIFY' => 'false',
+                'NICEPAY_WEBHOOK_TOKEN' => '',
+                'NICEPAY_WEBHOOK_PUBLIC_KEY' => '',
+                'NICEPAY_PAYMENT_PATH' => '/api/v1.0/debit/payment-host-to-host',
+                'NICEPAY_STATUS_PATH' => '/api/v1.0/debit/status',
+            ],
+        ],
     ];
 
     public function handle(): int

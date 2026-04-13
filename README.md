@@ -173,8 +173,9 @@ Fake helper lain yang tersedia termasuk:
 |--------|---------|--------|
 | Midtrans | `aliziodev/payid-midtrans` | Stable |
 | Xendit   | `aliziodev/payid-xendit`   | Stable |
-| DOKU     | `aliziodev/payid-doku`     | Coming Soon |
 | iPaymu   | `aliziodev/payid-ipaymu`   | Beta |
+| Nicepay  | `aliziodev/payid-nicepay`  | Beta |
+| DOKU     | `aliziodev/payid-doku`     | Coming Soon |
 
 ---
 
@@ -190,11 +191,13 @@ Fake helper lain yang tersedia termasuk:
 - [Driver Acceptance Checklist](docs/08-driver-acceptance-checklist.md)
 - [Midtrans Complete Usage Guide](docs/09-midtrans-complete-usage.md)
 - [Xendit Complete Usage Guide](docs/10-xendit-complete-usage.md)
-- [Driver Feature Matrix (Midtrans vs Xendit vs iPaymu)](docs/11-driver-feature-matrix.md)
+- [Driver Feature Matrix (Midtrans vs Xendit vs iPaymu vs Nicepay)](docs/11-driver-feature-matrix.md)
 - [Xendit Extension API Quick Reference](docs/12-xendit-extension-api-quick-reference.md)
 - [Midtrans Extension API Quick Reference](docs/13-midtrans-extension-api-quick-reference.md)
 - [iPaymu Complete Usage Guide](docs/14-ipaymu-complete-usage.md)
 - [iPaymu Extension API Quick Reference](docs/15-ipaymu-extension-api-quick-reference.md)
+- [Nicepay Complete Usage Guide](docs/16-nicepay-complete-usage.md)
+- [Nicepay Extension API Quick Reference](docs/17-nicepay-extension-api-quick-reference.md)
 - [Diagram Index](docs/diagram/README.md)
 - [PayID Complete System Flow Diagram](docs/diagram/01-payid-complete-system-flow.md)
 - [Checkout and Payment Lifecycle Flow](docs/diagram/02-checkout-and-lifecycle-flow.md)
@@ -218,6 +221,7 @@ Fake helper lain yang tersedia termasuk:
 
 - Coverage report belum dapat dijalankan jika environment belum memuat driver coverage.
 - Driver iPaymu sudah tersedia pada level beta dan dapat dipakai untuk flow charge/status/webhook.
+- Driver Nicepay sudah tersedia pada level beta dan mencakup fitur SNAP + V2 melalui extension method.
 - Fitur queue processing webhook disiapkan pada konfigurasi, tetapi implementasi orchestration async tetap perlu ditangani di aplikasi host.
 
 ---

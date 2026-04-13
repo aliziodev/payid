@@ -1,6 +1,6 @@
 <?php
 
-$allDrivers = ['Midtrans', 'Xendit', 'iPaymu'];
+$allDrivers = ['Midtrans', 'Xendit', 'iPaymu', 'Nicepay'];
 $stackChoices = ['payid-transactions (recommended)', 'manual (no default transaction stack)'];
 
 describe('InstallCommand', function () use ($allDrivers, $stackChoices) {
@@ -32,6 +32,14 @@ describe('InstallCommand', function () use ($allDrivers, $stackChoices) {
             ->expectsChoice('Select driver(s)', 'iPaymu', $allDrivers)
             ->expectsChoice('Transaction stack', $stackChoices[1], $stackChoices)
             ->expectsOutputToContain('composer require aliziodev/payid-ipaymu')
+            ->assertExitCode(0);
+    });
+
+    it('shows correct composer command for Nicepay', function () use ($allDrivers, $stackChoices) {
+        $this->artisan('payid:install', ['--no-install' => true])
+            ->expectsChoice('Select driver(s)', 'Nicepay', $allDrivers)
+            ->expectsChoice('Transaction stack', $stackChoices[1], $stackChoices)
+            ->expectsOutputToContain('composer require aliziodev/payid-nicepay')
             ->assertExitCode(0);
     });
 
