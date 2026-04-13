@@ -4,6 +4,7 @@ namespace Aliziodev\PayId\Laravel\Console;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Process;
 
 class InstallCommand extends Command
 {
@@ -73,10 +74,14 @@ class InstallCommand extends Command
         // Step 3 — select transaction stack
         $transactionStack = $this->selectTransactionStack();
 
-        // Step 4 — append .env stubs
+        // Step 4 — install packages automatically
+        $packages = $this->buildPackagesToInstall($selected, $transactionStack);
+        $this->installPackages($packages);
+
+        // Step 5 — append .env stubs
         $this->appendEnvVariables($selected);
 
-        // Step 5 — print install instructions
+        // Step 6 — print install instructions
         $this->printInstallInstructions($selected, $transactionStack);
 
         return self::SUCCESS;
@@ -207,17 +212,12 @@ class InstallCommand extends Command
         $this->components->info('Installation complete!');
         $this->newLine();
 
-        // Composer require commands
-        $this->line('  <options=bold>1. Install driver package(s) via Composer:</>');
+        // Installed package summary
+        $this->line('  <options=bold>1. Installed package(s):</>');
         $this->newLine();
 
-        foreach ($selected as $label) {
-            $package = $this->drivers[$label]['package'];
+        foreach ($this->buildPackagesToInstall($selected, $transactionStack) as $package) {
             $this->line("     <fg=green>composer require {$package}</>");
-        }
-
-        if ($transactionStack === 'payid-transactions (recommended)') {
-            $this->line('     <fg=green>composer require aliziodev/payid-transactions</>');
         }
 
         $this->newLine();
@@ -272,5 +272,57 @@ class InstallCommand extends Command
         $pattern = '/^\s*'.preg_quote($key, '/').'\s*=/m';
 
         return preg_match($pattern, $envContent) === 1;
+    }
+
+    /**
+     * @param  string[]  $selected
+     * @return string[]
+     */
+    protected function buildPackagesToInstall(array $selected, string $transactionStack): array
+    {
+        $packages = [];
+
+        foreach ($selected as $label) {
+            $package = $this->drivers[$label]['package'] ?? null;
+
+            if (is_string($package) && $package !== '') {
+                $packages[] = $package;
+            }
+        }
+
+        if ($transactionStack === 'payid-transactions (recommended)') {
+            $packages[] = 'aliziodev/payid-transactions';
+        }
+
+        return array_values(array_unique($packages));
+    }
+
+    /**
+     * @param  string[]  $packages
+     */
+    protected function installPackages(array $packages): void
+    {
+        if (empty($packages)) {
+            return;
+        }
+
+        $this->components->task('Installing package dependencies', function () use ($packages): bool {
+            if ($this->getLaravel()->runningUnitTests()) {
+                return true;
+            }
+
+            foreach ($packages as $package) {
+                $result = Process::timeout(600)->run(['composer', 'require', $package]);
+
+                if ($result->failed()) {
+                    $this->components->error("Failed to install package: {$package}");
+                    $this->line($result->errorOutput() !== '' ? $result->errorOutput() : $result->output());
+
+                    return false;
+                }
+            }
+
+            return true;
+        });
     }
 }
