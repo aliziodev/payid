@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(vendor/bin/pest --colors=always)"
+      "Bash(vendor/bin/pest --colors=always)",
+      "Bash(vendor/bin/pest --colors=always --filter=\"InstallCommand\")"
     ]
   }
 }

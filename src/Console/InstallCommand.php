@@ -4,93 +4,178 @@ namespace Aliziodev\PayId\Console;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
+use Symfony\Component\Process\Process;
 
 class InstallCommand extends Command
 {
-    protected $signature = 'payid:install';
+    protected $signature = 'payid:install
+                            {--no-install : Skip running composer require (show commands to run manually)}';
 
     protected $description = 'Install and configure the PayID payment gateway package';
 
-    /** Transaction stack option labels */
     protected const STACK_TRANSACTIONS = 'payid-transactions (recommended)';
 
     protected const STACK_MANUAL = 'manual (no default transaction stack)';
 
     /**
-     * Available driver definitions.
-     * Each entry: package, env vars (key => default value).
+     * Driver registry — harus selaras dengan config/payid.php drivers[].
+     *
+     * Setiap entry:
+     *   config_key  — key di config('payid.drivers.*')
+     *   package     — nama Composer package driver
+     *   env         — pasangan ENV_KEY => default_value yang akan ditambahkan ke .env
+     *                 (urutan dan nama HARUS sama dengan yang di config/payid.php)
      */
     protected array $drivers = [
+
+        // ---------------------------------------------------------------
+        // Midtrans — config('payid.drivers.midtrans')
+        // ---------------------------------------------------------------
         'Midtrans' => [
-            'package' => 'aliziodev/payid-midtrans',
-            'env' => [
-                'MIDTRANS_SERVER_KEY' => '',
-                'MIDTRANS_CLIENT_KEY' => '',
-                'MIDTRANS_IS_PRODUCTION' => 'false',
+            'config_key' => 'midtrans',
+            'package'    => 'aliziodev/payid-midtrans',
+            'env'        => [
+                'PAYID_DEFAULT_DRIVER'  => 'midtrans',
+                'MIDTRANS_ENV'          => 'sandbox',
+                'MIDTRANS_SERVER_KEY'   => '',
+                'MIDTRANS_CLIENT_KEY'   => '',
+                'MIDTRANS_MERCHANT_ID'  => '',
+                'MIDTRANS_ORDER_PREFIX' => '',
             ],
         ],
+
+        // ---------------------------------------------------------------
+        // Xendit — config('payid.drivers.xendit')
+        // ---------------------------------------------------------------
         'Xendit' => [
-            'package' => 'aliziodev/payid-xendit',
-            'env' => [
-                'XENDIT_SECRET_KEY' => '',
-                'XENDIT_PUBLIC_KEY' => '',
+            'config_key' => 'xendit',
+            'package'    => 'aliziodev/payid-xendit',
+            'env'        => [
+                'PAYID_DEFAULT_DRIVER' => 'xendit',
+                'XENDIT_ENV'           => 'test',
+                'XENDIT_SECRET_KEY'    => '',
+                'XENDIT_PUBLIC_KEY'    => '',
                 'XENDIT_WEBHOOK_TOKEN' => '',
             ],
         ],
+
+        // ---------------------------------------------------------------
+        // DOKU — config('payid.drivers.doku')
+        // ---------------------------------------------------------------
         'DOKU' => [
-            'package' => 'aliziodev/payid-doku',
-            'env' => [
-                'DOKU_CLIENT_ID' => '',
-                'DOKU_SECRET_KEY' => '',
-                'DOKU_IS_PRODUCTION' => 'false',
+            'config_key' => 'doku',
+            'package'    => 'aliziodev/payid-doku',
+            'env'        => [
+                'PAYID_DEFAULT_DRIVER' => 'doku',
+                'DOKU_ENV'             => 'sandbox',
+                'DOKU_CLIENT_ID'       => '',
+                'DOKU_SECRET_KEY'      => '',
+                'DOKU_SHARED_KEY'      => '',
             ],
         ],
+
+        // ---------------------------------------------------------------
+        // iPaymu — config('payid.drivers.ipaymu')
+        // ---------------------------------------------------------------
         'iPaymu' => [
-            'package' => 'aliziodev/payid-ipaymu',
-            'env' => [
-                'IPAYMU_VA' => '',
-                'IPAYMU_API_KEY' => '',
-                'IPAYMU_IS_PRODUCTION' => 'false',
+            'config_key' => 'ipaymu',
+            'package'    => 'aliziodev/payid-ipaymu',
+            'env'        => [
+                'PAYID_DEFAULT_DRIVER' => 'ipaymu',
+                'IPAYMU_ENV'           => 'sandbox',
+                'IPAYMU_VA'            => '',
+                'IPAYMU_API_KEY'       => '',
             ],
         ],
+
+        // ---------------------------------------------------------------
+        // Nicepay — config('payid.drivers.nicepay')
+        // ---------------------------------------------------------------
+        'Nicepay' => [
+            'config_key' => 'nicepay',
+            'package'    => 'aliziodev/payid-nicepay',
+            'env'        => [
+                'PAYID_DEFAULT_DRIVER'  => 'nicepay',
+                'NICEPAY_ENV'           => 'sandbox',
+                'NICEPAY_MERCHANT_ID'   => '',
+                'NICEPAY_MERCHANT_KEY'  => '',
+            ],
+        ],
+
+        // ---------------------------------------------------------------
+        // OY! Indonesia — config('payid.drivers.oyid')
+        // ---------------------------------------------------------------
+        'OY! Indonesia' => [
+            'config_key' => 'oyid',
+            'package'    => 'aliziodev/payid-oyid',
+            'env'        => [
+                'PAYID_DEFAULT_DRIVER' => 'oyid',
+                'OYID_ENV'             => 'staging',
+                'OYID_USERNAME'        => '',
+                'OYID_API_KEY'         => '',
+            ],
+        ],
+
+        // ---------------------------------------------------------------
+        // Tripay — config('payid.drivers.tripay')
+        // ---------------------------------------------------------------
+        'Tripay' => [
+            'config_key' => 'tripay',
+            'package'    => 'aliziodev/payid-tripay',
+            'env'        => [
+                'PAYID_DEFAULT_DRIVER'  => 'tripay',
+                'TRIPAY_ENV'            => 'sandbox',
+                'TRIPAY_API_KEY'        => '',
+                'TRIPAY_PRIVATE_KEY'    => '',
+                'TRIPAY_MERCHANT_CODE'  => '',
+            ],
+        ],
+
     ];
 
     public function handle(): int
     {
         $this->printBanner();
 
-        // Step 1 — publish config
         $this->publishConfig();
 
-        // Step 2 — choose driver
-        $driver = $this->selectDriver();
+        $driver     = $this->selectDriver();
+        $stack      = $this->selectTransactionStack();
+        $configKey  = $this->drivers[$driver]['config_key'];
 
-        // Step 3 — choose transaction stack
-        $stack = $this->selectTransactionStack();
+        $this->installPackages($driver, $stack);
 
-        // Step 4 — show package installation progress
-        $this->showInstallProgress($driver, $stack);
+        $this->appendEnvVariables($driver, $configKey);
 
-        // Step 5 — append .env stubs
-        $this->appendEnvVariables($driver);
-
-        // Step 6 — print next steps
-        $this->printNextSteps($driver, $stack);
+        $this->printNextSteps($driver, $stack, $configKey);
 
         return self::SUCCESS;
     }
 
     // -------------------------------------------------------------------------
+    // Banner & prompts
+    // -------------------------------------------------------------------------
 
     protected function printBanner(): void
     {
         $this->newLine();
-        $this->line('  <fg=cyan;options=bold>██████╗  █████╗ ██╗   ██╗██╗██████╗ </>');
-        $this->line('  <fg=cyan;options=bold>██╔══██╗██╔══██╗╚██╗ ██╔╝██║██╔══██╗</>');
-        $this->line('  <fg=cyan;options=bold>██████╔╝███████║ ╚████╔╝ ██║██║  ██║</>');
-        $this->line('  <fg=cyan;options=bold>██╔═══╝ ██╔══██║  ╚██╔╝  ██║██║  ██║</>');
-        $this->line('  <fg=cyan;options=bold>██║     ██║  ██║   ██║   ██║██████╔╝</>');
-        $this->line('  <fg=cyan;options=bold>╚═╝     ╚═╝  ╚═╝   ╚═╝   ╚═╝╚═════╝ </>');
+
+        // ── Merah (bright → normal) ───────────────────────────────────────────
+        $this->line('  <fg=red;options=bold>██████╗  █████╗ ██╗   ██╗██╗██████╗ </>');
+        $this->line('  <fg=red;options=bold>██╔══██╗██╔══██╗╚██╗ ██╔╝██║██╔══██╗</>');
+        $this->line('  <fg=red>██████╔╝███████║ ╚████╔╝ ██║██║  ██║</>');
+        // ── Putih (normal → bright) ───────────────────────────────────────────
+        $this->line('  <fg=white>██╔═══╝ ██╔══██║  ╚██╔╝  ██║██║  ██║</>');
+        $this->line('  <fg=white;options=bold>██║     ██║  ██║   ██║   ██║██████╔╝</>');
+        $this->line('  <fg=white;options=bold>╚═╝     ╚═╝  ╚═╝   ╚═╝   ╚═╝╚═════╝ </>');
+
+        $this->newLine();
+
+        // ── Bendera merah-putih ───────────────────────────────────────────────
+        $this->line('  <fg=red>▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄</><fg=white>▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄</>');
+        $this->line('  <fg=red;options=bold>          MERAH         </><fg=white;options=bold>        PUTIH        </>');
+        $this->line('  <fg=red>▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀</><fg=white>▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀</>');
+
         $this->newLine();
         $this->line('  <fg=white;options=bold>Laravel Payment Gateway Orchestrator</>');
         $this->line('  <fg=gray>Unified interface for Indonesian payment providers.</>');
@@ -101,7 +186,7 @@ class InstallCommand extends Command
     {
         $this->components->task('Publishing config file', function (): void {
             $this->callSilent('vendor:publish', [
-                '--tag' => 'payid-config',
+                '--tag'   => 'payid-config',
                 '--force' => false,
             ]);
         });
@@ -127,47 +212,141 @@ class InstallCommand extends Command
         );
     }
 
-    protected function showInstallProgress(string $driver, string $stack): void
+    // -------------------------------------------------------------------------
+    // Package installation
+    // -------------------------------------------------------------------------
+
+    protected function installPackages(string $driver, string $stack): void
     {
+        $driverPackage       = $this->drivers[$driver]['package'];
+        $withTransactions    = $stack === self::STACK_TRANSACTIONS;
+        $skipActualInstall   = (bool) $this->option('no-install');
+
         $this->newLine();
-        $this->line('  <fg=white;options=bold>Package installation steps:</>');
+        $this->line('  <fg=white;options=bold>Installing packages:</>');
         $this->newLine();
 
-        // Core package (already installed if this command runs)
+        // Core — always already present
         $this->components->task(
-            '  <fg=green>aliziodev/payid</> <fg=gray>(core — already installed)</>',
+            '<fg=green>aliziodev/payid</> <fg=gray>(core — already installed)</>',
             fn () => true,
         );
 
-        // Driver package
-        $driverPackage = $this->drivers[$driver]['package'];
-        $this->components->task(
-            "  <fg=yellow>{$driverPackage}</>",
-            function () use ($driverPackage): bool {
-                // Real projects would run composer here; we just simulate progress
-                return true;
-            },
-        );
+        if ($skipActualInstall) {
+            // Just show task boxes as "pending"
+            $this->components->task("<fg=yellow>{$driverPackage}</>", fn () => true);
 
-        // Transaction stack package
-        if ($stack === self::STACK_TRANSACTIONS) {
-            $this->components->task(
-                '  <fg=yellow>aliziodev/payid-transactions</> <fg=gray>(ledger + audit trail)</>',
-                fn () => true,
-            );
+            if ($withTransactions) {
+                $this->components->task(
+                    '<fg=yellow>aliziodev/payid-transactions</> <fg=gray>(ledger + audit trail)</>',
+                    fn () => true,
+                );
+            }
+
+            $this->newLine();
+            $this->line('  <fg=gray>Run the following commands to install:</>');
+            $this->newLine();
+            $this->line("     <fg=green>composer require {$driverPackage}</>");
+
+            if ($withTransactions) {
+                $this->line('     <fg=green>composer require aliziodev/payid-transactions</>');
+            }
+
+            return;
         }
 
-        $this->newLine();
-        $this->line('  <fg=gray>Run the following Composer commands to install:</>');
-        $this->newLine();
-        $this->line("     <fg=green>composer require {$driverPackage}</>");
+        // Actually run composer
+        $driverOk       = $this->composerRequire($driverPackage);
+        $transactionsOk = true;
 
-        if ($stack === self::STACK_TRANSACTIONS) {
-            $this->line('     <fg=green>composer require aliziodev/payid-transactions</>');
+        if ($withTransactions) {
+            $transactionsOk = $this->composerRequire('aliziodev/payid-transactions');
+        }
+
+        // If anything failed, remind them of the manual commands
+        if (! $driverOk || ! $transactionsOk) {
+            $this->newLine();
+            $this->components->warn('Some packages could not be installed automatically. Run these commands manually:');
+            $this->newLine();
+
+            if (! $driverOk) {
+                $this->line("     <fg=green>composer require {$driverPackage}</>");
+            }
+
+            if (! $transactionsOk) {
+                $this->line('     <fg=green>composer require aliziodev/payid-transactions</>');
+            }
         }
     }
 
-    protected function appendEnvVariables(string $driver): void
+    /**
+     * Run `composer require <package>` and stream the output line-by-line.
+     * Returns true if the process exits successfully.
+     */
+    protected function composerRequire(string $package): bool
+    {
+        $this->newLine();
+        $this->line("  <fg=cyan;options=bold>» composer require {$package}</>");
+        $this->newLine();
+
+        $command = $this->buildComposerCommand(['require', $package]);
+        $process = new Process($command, base_path(), null, null, 300); // 5-minute timeout
+
+        $failed = false;
+
+        $process->run(function (string $type, string $data) use (&$failed): void {
+            if ($type === Process::ERR) {
+                $failed = true;
+            }
+
+            foreach (explode("\n", rtrim($data)) as $line) {
+                if (trim($line) !== '') {
+                    $this->line("  <fg=gray>{$line}</>");
+                }
+            }
+        });
+
+        $success = $process->isSuccessful();
+
+        $this->newLine();
+
+        if ($success) {
+            $this->components->task(
+                "<fg=green>{$package}</> <fg=gray>installed</>",
+                fn () => true,
+            );
+        } else {
+            $this->components->task(
+                "<fg=red>{$package}</> <fg=gray>installation failed</>",
+                fn () => false,
+            );
+        }
+
+        return $success;
+    }
+
+    /**
+     * Build the composer command array, preferring a local composer.phar if present.
+     *
+     * @param  string[]  $args
+     * @return string[]
+     */
+    protected function buildComposerCommand(array $args): array
+    {
+        $composerPhar = base_path('composer.phar');
+
+        $binary = file_exists($composerPhar)
+            ? [PHP_BINARY, $composerPhar]
+            : ['composer'];
+
+        return array_merge($binary, $args);
+    }
+
+    // -------------------------------------------------------------------------
+    // .env stubs
+    // -------------------------------------------------------------------------
+
+    protected function appendEnvVariables(string $driver, string $configKey): void
     {
         $envPath = base_path('.env');
 
@@ -179,16 +358,38 @@ class InstallCommand extends Command
         }
 
         $envContent = File::get($envPath);
+
+        // Build env vars: swap the generic PAYID_DEFAULT_DRIVER placeholder for real driver value
         $envVars = $this->drivers[$driver]['env'] ?? [];
 
-        $stub = "\n# PayID — {$driver}\n";
-        $hasNew = false;
+        $stub     = "\n# PayID — {$driver}\n";
+        $hasNew   = false;
         $appended = [];
+        $updated  = [];
 
         foreach ($envVars as $key => $default) {
+            // PAYID_DEFAULT_DRIVER: update in-place if already exists, append if not
+            if ($key === 'PAYID_DEFAULT_DRIVER') {
+                if (preg_match('/^PAYID_DEFAULT_DRIVER=.*/m', $envContent)) {
+                    $envContent = preg_replace(
+                        '/^PAYID_DEFAULT_DRIVER=.*/m',
+                        "PAYID_DEFAULT_DRIVER={$configKey}",
+                        $envContent,
+                    );
+                    File::put($envPath, $envContent);
+                    $updated[] = $key;
+                    continue;
+                }
+                // Not present — will be appended below
+                $stub   .= "{$key}={$configKey}\n";
+                $hasNew  = true;
+                $appended[] = $key;
+                continue;
+            }
+
             if (! str_contains($envContent, $key)) {
-                $stub .= "{$key}={$default}\n";
-                $hasNew = true;
+                $stub   .= "{$key}={$default}\n";
+                $hasNew  = true;
                 $appended[] = $key;
             }
         }
@@ -202,45 +403,61 @@ class InstallCommand extends Command
             return true;
         });
 
-        if (! empty($appended)) {
-            foreach ($appended as $key) {
-                $this->line("  <fg=gray>+ {$key}</>");
-            }
-        } else {
+        foreach ($updated as $key) {
+            $this->line("  <fg=blue>~ {$key} updated</>");
+        }
+
+        foreach ($appended as $key) {
+            $this->line("  <fg=gray>+ {$key}</>");
+        }
+
+        if (empty($updated) && empty($appended)) {
             $this->line('  <fg=gray>All .env keys already present — nothing added.</>');
         }
     }
 
-    protected function printNextSteps(string $driver, string $stack): void
+    // -------------------------------------------------------------------------
+    // Next steps summary
+    // -------------------------------------------------------------------------
+
+    protected function printNextSteps(string $driver, string $stack, string $configKey): void
     {
-        $driverKey = strtolower($driver === 'iPaymu' ? 'ipaymu' : $driver);
+        $withTransactions = $stack === self::STACK_TRANSACTIONS;
+        $credentialKeys   = $this->credentialEnvKeys($driver);
 
         $this->newLine();
         $this->components->info('Setup complete! Follow these steps to finish:');
         $this->newLine();
 
-        $this->line('  <options=bold>1. Fill in credentials in <comment>.env</comment>:</>');
+        // Step 1 — fill credentials
+        $this->line('  <options=bold>1. Fill in your credentials in <comment>.env</comment>:</>');
         $this->newLine();
 
-        foreach (array_keys($this->drivers[$driver]['env'] ?? []) as $key) {
-            $this->line("     <fg=yellow>{$key}=your-value-here</>");
+        foreach ($credentialKeys as $key) {
+            $this->line("     <fg=yellow>{$key}=<your-value-here></>");
         }
 
         $this->newLine();
-        $this->line('  <options=bold>2. Set the default driver in <comment>config/payid.php</comment>:</>');
-        $this->newLine();
-        $this->line("     <fg=gray>'default' => env('PAYID_DEFAULT', '{$driverKey}'),</>");
 
-        if ($stack === self::STACK_TRANSACTIONS) {
+        // Step 2 — note about PAYID_DEFAULT_DRIVER (already set by appendEnvVariables)
+        $this->line("  <options=bold>2. Your default driver is already set in <comment>.env</comment>:</>");
+        $this->newLine();
+        $this->line("     <fg=gray>PAYID_DEFAULT_DRIVER={$configKey}</>");
+
+        $step = 3;
+
+        // Step 3 (optional) — payid-transactions migrations
+        if ($withTransactions) {
             $this->newLine();
-            $this->line('  <options=bold>3. Publish and run payid-transactions migrations:</>');
+            $this->line("  <options=bold>{$step}. Publish and run payid-transactions migrations:</>");
             $this->newLine();
             $this->line('     <fg=green>php artisan vendor:publish --tag=payid-transactions-migrations</>');
             $this->line('     <fg=green>php artisan migrate</>');
+            $step++;
         }
 
+        // Step N — clear config cache
         $this->newLine();
-        $step = $stack === self::STACK_TRANSACTIONS ? 4 : 3;
         $this->line("  <options=bold>{$step}. Clear config cache:</>");
         $this->newLine();
         $this->line('     <fg=green>php artisan config:clear</>');
@@ -248,5 +465,20 @@ class InstallCommand extends Command
         $this->newLine();
         $this->line('  <fg=gray>Documentation: https://github.com/aliziodev/payid</>');
         $this->newLine();
+    }
+
+    /**
+     * Return only credential env keys (exclude PAYID_DEFAULT_DRIVER and *_ENV).
+     *
+     * @return string[]
+     */
+    protected function credentialEnvKeys(string $driver): array
+    {
+        return array_keys(array_filter(
+            $this->drivers[$driver]['env'] ?? [],
+            fn (string $key) => ! in_array($key, ['PAYID_DEFAULT_DRIVER'])
+                && ! str_ends_with($key, '_ENV'),
+            ARRAY_FILTER_USE_KEY,
+        ));
     }
 }
