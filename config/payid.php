@@ -8,7 +8,7 @@ return [
     |--------------------------------------------------------------------------
     | Driver yang digunakan secara default jika tidak ditentukan secara eksplisit.
     | Nilai harus sesuai dengan salah satu key di array 'drivers' di bawah.
-    | Contoh: midtrans | xendit | doku | ipaymu | nicepay | oyid | tripay
+    | Driver aktif saat ini: midtrans | xendit | ipaymu
     */
     'default' => env('PAYID_DEFAULT_DRIVER', 'midtrans'),
 
@@ -31,6 +31,10 @@ return [
     |   1. composer require aliziodev/payid-<driver>
     |   2. Set env variable yang sesuai di .env
     |   3. Set PAYID_DEFAULT_DRIVER ke nama driver
+    |
+    | Catatan:
+    |   - Driver aktif: midtrans, xendit, ipaymu
+    |   - Coming soon: doku, nicepay, oyid, tripay
     */
     'drivers' => [
 
@@ -73,22 +77,6 @@ return [
 
         /*
         |----------------------------------------------------------------------
-        | DOKU
-        |----------------------------------------------------------------------
-        | Dokumentasi: https://developers.doku.com
-        | Sandbox Dashboard: https://sandbox.doku.com
-        | Production Dashboard: https://dashboard.doku.com
-        */
-        'doku' => [
-            'driver' => 'doku',
-            'environment' => env('DOKU_ENV', 'sandbox'), // sandbox | production
-            'client_id' => env('DOKU_CLIENT_ID'),
-            'secret_key' => env('DOKU_SECRET_KEY'),
-            'shared_key' => env('DOKU_SHARED_KEY'),
-        ],
-
-        /*
-        |----------------------------------------------------------------------
         | iPaymu
         |----------------------------------------------------------------------
         | Dokumentasi: https://ipaymu.com/api
@@ -100,50 +88,26 @@ return [
             'environment' => env('IPAYMU_ENV', 'sandbox'), // sandbox | production
             'va' => env('IPAYMU_VA'),
             'api_key' => env('IPAYMU_API_KEY'),
+            'base_url' => env('IPAYMU_BASE_URL'),
+            'timeout' => (int) env('IPAYMU_TIMEOUT', 30),
+            'webhook_verification_enabled' => (bool) env('IPAYMU_WEBHOOK_VERIFY', false),
+            'webhook_token' => env('IPAYMU_WEBHOOK_TOKEN'),
+            'webhook_signature_key' => env('IPAYMU_WEBHOOK_SIGNATURE_KEY'),
+            'payment_path' => env('IPAYMU_PAYMENT_PATH', '/api/v2/payment'),
+            'direct_payment_path' => env('IPAYMU_DIRECT_PAYMENT_PATH', '/api/v2/payment/direct'),
+            'payment_channel_path' => env('IPAYMU_PAYMENT_CHANNEL_PATH', '/api/v2/payment-channel'),
+            'transaction_path' => env('IPAYMU_TRANSACTION_PATH', '/api/v2/transaction'),
+            'balance_path' => env('IPAYMU_BALANCE_PATH', '/api/v2/balance'),
+            'history_path' => env('IPAYMU_HISTORY_PATH', '/api/v2/history'),
         ],
 
         /*
         |----------------------------------------------------------------------
-        | Nicepay (PT Ionpay Networks)
+        | Coming Soon Drivers
         |----------------------------------------------------------------------
-        | Dokumentasi: https://docs.nicepay.co.id
-        | Dashboard: https://merchant.nicepay.co.id
+        | DOKU, Nicepay, OY! Indonesia, dan Tripay masih roadmap.
+        | Konfigurasi aktif sengaja belum disediakan agar tidak ambigu.
         */
-        'nicepay' => [
-            'driver' => 'nicepay',
-            'environment' => env('NICEPAY_ENV', 'sandbox'), // sandbox | production
-            'merchant_id' => env('NICEPAY_MERCHANT_ID'),   // iMid
-            'merchant_key' => env('NICEPAY_MERCHANT_KEY'),
-        ],
-
-        /*
-        |----------------------------------------------------------------------
-        | OY! Indonesia
-        |----------------------------------------------------------------------
-        | Dokumentasi: https://api-docs.oyindonesia.com
-        | Dashboard: https://desktop.oyindonesia.com
-        */
-        'oyid' => [
-            'driver' => 'oyid',
-            'environment' => env('OYID_ENV', 'staging'), // staging | production
-            'username' => env('OYID_USERNAME'),
-            'api_key' => env('OYID_API_KEY'),
-        ],
-
-        /*
-        |----------------------------------------------------------------------
-        | Tripay
-        |----------------------------------------------------------------------
-        | Dokumentasi: https://tripay.co.id/developer
-        | Dashboard: https://tripay.co.id/member/merchant
-        */
-        'tripay' => [
-            'driver' => 'tripay',
-            'environment' => env('TRIPAY_ENV', 'sandbox'), // sandbox | production
-            'api_key' => env('TRIPAY_API_KEY'),
-            'private_key' => env('TRIPAY_PRIVATE_KEY'),
-            'merchant_code' => env('TRIPAY_MERCHANT_CODE'),
-        ],
 
     ],
 

@@ -1,6 +1,11 @@
 # PayID — Technical Architecture Document
 > Version: 1.0.0-draft | Date: 2026-04-13
 
+Referensi diagram detail end-to-end tersedia di:
+
+- `docs/diagram/README.md`
+- `docs/diagram/01-payid-complete-system-flow.md`
+
 ---
 
 ## 1. Gambaran Arsitektur Tingkat Tinggi

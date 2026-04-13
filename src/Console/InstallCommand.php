@@ -60,21 +60,6 @@ class InstallCommand extends Command
         ],
 
         // ---------------------------------------------------------------
-        // DOKU — config('payid.drivers.doku')
-        // ---------------------------------------------------------------
-        'DOKU' => [
-            'config_key' => 'doku',
-            'package' => 'aliziodev/payid-doku',
-            'env' => [
-                'PAYID_DEFAULT_DRIVER' => 'doku',
-                'DOKU_ENV' => 'sandbox',
-                'DOKU_CLIENT_ID' => '',
-                'DOKU_SECRET_KEY' => '',
-                'DOKU_SHARED_KEY' => '',
-            ],
-        ],
-
-        // ---------------------------------------------------------------
         // iPaymu — config('payid.drivers.ipaymu')
         // ---------------------------------------------------------------
         'iPaymu' => [
@@ -85,52 +70,19 @@ class InstallCommand extends Command
                 'IPAYMU_ENV' => 'sandbox',
                 'IPAYMU_VA' => '',
                 'IPAYMU_API_KEY' => '',
+                'IPAYMU_BASE_URL' => '',
+                'IPAYMU_TIMEOUT' => '30',
+                'IPAYMU_WEBHOOK_VERIFY' => 'false',
+                'IPAYMU_WEBHOOK_TOKEN' => '',
+                'IPAYMU_WEBHOOK_SIGNATURE_KEY' => '',
+                'IPAYMU_PAYMENT_PATH' => '/api/v2/payment',
+                'IPAYMU_DIRECT_PAYMENT_PATH' => '/api/v2/payment/direct',
+                'IPAYMU_PAYMENT_CHANNEL_PATH' => '/api/v2/payment-channel',
+                'IPAYMU_TRANSACTION_PATH' => '/api/v2/transaction',
+                'IPAYMU_BALANCE_PATH' => '/api/v2/balance',
+                'IPAYMU_HISTORY_PATH' => '/api/v2/history',
             ],
         ],
-
-        // ---------------------------------------------------------------
-        // Nicepay — config('payid.drivers.nicepay')
-        // ---------------------------------------------------------------
-        'Nicepay' => [
-            'config_key' => 'nicepay',
-            'package' => 'aliziodev/payid-nicepay',
-            'env' => [
-                'PAYID_DEFAULT_DRIVER' => 'nicepay',
-                'NICEPAY_ENV' => 'sandbox',
-                'NICEPAY_MERCHANT_ID' => '',
-                'NICEPAY_MERCHANT_KEY' => '',
-            ],
-        ],
-
-        // ---------------------------------------------------------------
-        // OY! Indonesia — config('payid.drivers.oyid')
-        // ---------------------------------------------------------------
-        'OY! Indonesia' => [
-            'config_key' => 'oyid',
-            'package' => 'aliziodev/payid-oyid',
-            'env' => [
-                'PAYID_DEFAULT_DRIVER' => 'oyid',
-                'OYID_ENV' => 'staging',
-                'OYID_USERNAME' => '',
-                'OYID_API_KEY' => '',
-            ],
-        ],
-
-        // ---------------------------------------------------------------
-        // Tripay — config('payid.drivers.tripay')
-        // ---------------------------------------------------------------
-        'Tripay' => [
-            'config_key' => 'tripay',
-            'package' => 'aliziodev/payid-tripay',
-            'env' => [
-                'PAYID_DEFAULT_DRIVER' => 'tripay',
-                'TRIPAY_ENV' => 'sandbox',
-                'TRIPAY_API_KEY' => '',
-                'TRIPAY_PRIVATE_KEY' => '',
-                'TRIPAY_MERCHANT_CODE' => '',
-            ],
-        ],
-
     ];
 
     public function handle(): int

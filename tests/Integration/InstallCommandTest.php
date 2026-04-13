@@ -1,6 +1,6 @@
 <?php
 
-$allDrivers = ['Midtrans', 'Xendit', 'DOKU', 'iPaymu', 'Nicepay', 'OY! Indonesia', 'Tripay'];
+$allDrivers = ['Midtrans', 'Xendit', 'iPaymu'];
 $stackChoices = ['payid-transactions (recommended)', 'manual (no default transaction stack)'];
 
 describe('InstallCommand', function () use ($allDrivers, $stackChoices) {
@@ -27,35 +27,11 @@ describe('InstallCommand', function () use ($allDrivers, $stackChoices) {
             ->assertExitCode(0);
     });
 
-    it('shows correct composer command for DOKU', function () use ($allDrivers, $stackChoices) {
+    it('shows correct composer command for iPaymu', function () use ($allDrivers, $stackChoices) {
         $this->artisan('payid:install', ['--no-install' => true])
-            ->expectsChoice('Select driver(s)', 'DOKU', $allDrivers)
+            ->expectsChoice('Select driver(s)', 'iPaymu', $allDrivers)
             ->expectsChoice('Transaction stack', $stackChoices[1], $stackChoices)
-            ->expectsOutputToContain('composer require aliziodev/payid-doku')
-            ->assertExitCode(0);
-    });
-
-    it('shows correct composer command for Nicepay', function () use ($allDrivers, $stackChoices) {
-        $this->artisan('payid:install', ['--no-install' => true])
-            ->expectsChoice('Select driver(s)', 'Nicepay', $allDrivers)
-            ->expectsChoice('Transaction stack', $stackChoices[1], $stackChoices)
-            ->expectsOutputToContain('composer require aliziodev/payid-nicepay')
-            ->assertExitCode(0);
-    });
-
-    it('shows correct composer command for OY! Indonesia', function () use ($allDrivers, $stackChoices) {
-        $this->artisan('payid:install', ['--no-install' => true])
-            ->expectsChoice('Select driver(s)', 'OY! Indonesia', $allDrivers)
-            ->expectsChoice('Transaction stack', $stackChoices[1], $stackChoices)
-            ->expectsOutputToContain('composer require aliziodev/payid-oyid')
-            ->assertExitCode(0);
-    });
-
-    it('shows correct composer command for Tripay', function () use ($allDrivers, $stackChoices) {
-        $this->artisan('payid:install', ['--no-install' => true])
-            ->expectsChoice('Select driver(s)', 'Tripay', $allDrivers)
-            ->expectsChoice('Transaction stack', $stackChoices[1], $stackChoices)
-            ->expectsOutputToContain('composer require aliziodev/payid-tripay')
+            ->expectsOutputToContain('composer require aliziodev/payid-ipaymu')
             ->assertExitCode(0);
     });
 

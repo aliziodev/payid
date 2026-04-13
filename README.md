@@ -76,7 +76,7 @@ $response = PayId::charge(ChargeRequest::make([
     'currency'          => 'IDR',
     'channel'           => PaymentChannel::Qris,
     'customer'          => [
-        'name'  => 'Budi Santoso',
+        'name'  => 'Alizio',
         'email' => 'budi@example.com',
     ],
 ]));
@@ -174,7 +174,7 @@ Fake helper lain yang tersedia termasuk:
 | Midtrans | `aliziodev/payid-midtrans` | Stable |
 | Xendit   | `aliziodev/payid-xendit`   | Stable |
 | DOKU     | `aliziodev/payid-doku`     | Coming Soon |
-| iPaymu   | `aliziodev/payid-ipaymu`   | Coming Soon |
+| iPaymu   | `aliziodev/payid-ipaymu`   | Beta |
 
 ---
 
@@ -188,6 +188,19 @@ Fake helper lain yang tersedia termasuk:
 - [Production Readiness Checklist](docs/06-production-readiness.md)
 - [Driver Authoring Guide](docs/07-driver-authoring-guide.md)
 - [Driver Acceptance Checklist](docs/08-driver-acceptance-checklist.md)
+- [Midtrans Complete Usage Guide](docs/09-midtrans-complete-usage.md)
+- [Xendit Complete Usage Guide](docs/10-xendit-complete-usage.md)
+- [Driver Feature Matrix (Midtrans vs Xendit vs iPaymu)](docs/11-driver-feature-matrix.md)
+- [Xendit Extension API Quick Reference](docs/12-xendit-extension-api-quick-reference.md)
+- [Midtrans Extension API Quick Reference](docs/13-midtrans-extension-api-quick-reference.md)
+- [iPaymu Complete Usage Guide](docs/14-ipaymu-complete-usage.md)
+- [iPaymu Extension API Quick Reference](docs/15-ipaymu-extension-api-quick-reference.md)
+- [Diagram Index](docs/diagram/README.md)
+- [PayID Complete System Flow Diagram](docs/diagram/01-payid-complete-system-flow.md)
+- [Checkout and Payment Lifecycle Flow](docs/diagram/02-checkout-and-lifecycle-flow.md)
+- [Webhook Processing Flow](docs/diagram/03-webhook-processing-flow.md)
+- [Subscription Flow](docs/diagram/04-subscription-flow.md)
+- [Driver Extension Flow](docs/diagram/05-driver-extension-flow.md)
 - [ADR: Core and Driver Separation](docs/internals/adr/001-core-driver-separation.md)
 - [ADR: Capability-based Contracts](docs/internals/adr/002-capability-based-contracts.md)
 - [ADR: Immutable DTO](docs/internals/adr/003-immutable-dto.md)
@@ -204,7 +217,7 @@ Fake helper lain yang tersedia termasuk:
 ## Known Limitations
 
 - Coverage report belum dapat dijalankan jika environment belum memuat driver coverage.
-- Driver package di luar Midtrans/Xendit pada README masih bersifat roadmap/coming soon.
+- Driver iPaymu sudah tersedia pada level beta dan dapat dipakai untuk flow charge/status/webhook.
 - Fitur queue processing webhook disiapkan pada konfigurasi, tetapi implementasi orchestration async tetap perlu ditangani di aplikasi host.
 
 ---
