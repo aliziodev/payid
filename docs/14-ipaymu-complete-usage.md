@@ -81,7 +81,7 @@ $response = PayId::driver('ipaymu')->charge(ChargeRequest::make([
     'currency' => 'IDR',
     'channel' => PaymentChannel::Qris,
     'customer' => [
-        'name' => 'Budi Santoso',
+        'name' => 'Alizio',
         'email' => 'budi@example.com',
         'phone' => '081234567890',
     ],
@@ -145,7 +145,7 @@ $driver = PayId::driver('ipaymu')->getDriver();
 
 $directPayment = $driver->directPayment([
     'amount' => 50000,
-    'buyerName' => 'Budi Santoso',
+    'buyerName' => 'Alizio',
 ]);
 
 $redirectPayment = $driver->redirectPayment([

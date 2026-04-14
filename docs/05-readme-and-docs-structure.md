@@ -160,7 +160,7 @@ $response = PayId::charge(ChargeRequest::make([
     'currency'          => 'IDR',
     'channel'           => PaymentChannel::Qris,
     'customer'          => [
-        'name'  => 'Budi Santoso',
+        'name'  => 'Alizio',
         'email' => 'budi@example.com',
     ],
 ]));

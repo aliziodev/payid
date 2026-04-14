@@ -4,6 +4,28 @@
 
 PayID adalah package Laravel yang menyatukan berbagai payment gateway Indonesia dalam satu API yang konsisten dan extensible. Integrasikan sekali, gunakan provider mana saja melalui model driver.
 
+## Tujuan, Cakupan, dan Batasan
+
+### Tujuan
+
+- Menyediakan API pembayaran yang konsisten lintas provider untuk use case umum aplikasi.
+- Mengurangi vendor lock-in dengan pendekatan driver dan capability-based contracts.
+- Menstandarkan lifecycle pembayaran (charge, status, webhook, dsb.) agar mudah diuji dan dipelihara.
+
+### Cakupan
+
+- Orkestrasi pembayaran pada layer aplikasi Laravel melalui facade/manager PayID.
+- Standardisasi DTO, enum status, dan webhook normalization lintas driver.
+- Ekstensi provider-specific melalui package driver terpisah (mis. Midtrans, Xendit, iPaymu, Nicepay).
+- Integrasi opsional dengan stack transaksi/ledger lewat package pendamping.
+
+### Batasan
+
+- PayID bukan payment gateway; eksekusi transaksi tetap dilakukan oleh provider masing-masing.
+- Fitur provider-specific yang sangat khusus tidak selalu tersedia di API generic manager, dan diakses via extension method pada driver.
+- Compliance, legal, settlement, rekonsiliasi bank, dan dispute handling tetap menjadi tanggung jawab aplikasi/operasional bisnis.
+- Konfigurasi kredensial, endpoint, serta kebijakan retry/queue production harus ditetapkan di aplikasi host sesuai kebutuhan domain.
+
 ---
 
 ## Requirements

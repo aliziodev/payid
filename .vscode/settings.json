@@ -1,0 +1,15 @@
+{
+  "github.copilot.chat.commitMessageGeneration.instructions": [
+    "Use Conventional Commits format: <type>(optional-scope): <subject>.",
+    "Semantic release mapping: feat=minor, fix=patch, perf=patch, refactor=patch, and BREAKING CHANGE (or !)=major.",
+    "Use non-release types for maintenance work when appropriate: docs, chore, test.",
+    "Write the subject in imperative mood, concise, lowercase, and without a trailing period.",
+    "Keep one primary change per commit message; avoid mixing unrelated concerns.",
+    "Auto-detect commit message language from README.md: if the README is predominantly Indonesian, write in Indonesian; if predominantly English, write in English.",
+    "If language detection is unclear, default to English.",
+    "When changes touch employee package modules, prefer scopes like employee, api, web, export, validation, routes, or docs.",
+    "Valid example: feat(export): add employee xlsx export for api and web routes",
+    "Valid example: fix(validation): correct employee status request attributes mapping",
+    "Do not use free-form subjects like 'Add ...' without a conventional type prefix."
+  ]
+}

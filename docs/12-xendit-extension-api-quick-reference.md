@@ -54,7 +54,7 @@ $payout = $driver->createPayout([
     'channel_code' => 'ID_BCA',
     'channel_properties' => [
         'account_number' => '1234567890',
-        'account_holder_name' => 'Budi Santoso',
+        'account_holder_name' => 'Alizio',
     ],
     'amount' => 100000,
     'currency' => 'IDR',
